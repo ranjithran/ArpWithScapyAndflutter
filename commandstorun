@@ -1,0 +1,3 @@
+sudo -E gunicorn -b 0.0.0.0:5000 --worker-class eventlet -w 3  main:app
+
+sudo -E gunicorn -b 0.0.0.0:5000 -w 4  main:app 
