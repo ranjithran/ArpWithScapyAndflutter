@@ -1,16 +1,15 @@
 from scapy.all import *
 from scapy.layers.http import HTTPRequest
 from threading import Event, Thread
-import subprocess
+from eventlet.green import subprocess
 import json
 import os
 import signal
 from flaskAndSocketServer import logger
-import queue
 
 
 class scapyUtil:
-    _queue = queue.Queue()
+    _queue = []
     sniffRef = None
     dstmac = ''
     srcmac = ''
@@ -38,7 +37,7 @@ class scapyUtil:
             elif '=' in line:
                 key, val = line.split('=', 1)
                 packet_dict[layer][key.strip()] = val.strip()     
-        self._queue.put_nowait(json.dumps(packet_dict))
+        self._queue.append(json.dumps(packet_dict))
 
     def startSniffAsync(self):
         log("Starting Sniffer Async")

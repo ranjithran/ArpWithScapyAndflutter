@@ -14,10 +14,19 @@ thread_forSpeed = None
 def send_packetData(event, q):
     global thread
     try:
-        while event.is_set() or q.full():
-            if (not q.empty()):
-                socketio.emit('my_response',  q.get())
-                socketio.sleep(seconds=.5)
+        while event.is_set():
+            if (len(q)>0):
+                
+                l=0
+                if(len(q)>2):
+                    l=int(len(q)/2)
+                socketio.emit('my_response', q)
+                if(l!=0):
+                    
+                    del q[0:l]
+                else:
+                    q.pop(0)    
+                socketio.sleep(seconds=2)
     finally:
         event.clear()
         thread = None
@@ -31,7 +40,7 @@ def send_netSpeed(event):
             net_stat = psutil.net_io_counters(pernic=True, nowrap=True)[inf]
             net_in_1 = net_stat.bytes_recv
             net_out_1 = net_stat.bytes_sent
-            socketio.sleep(1)
+            socketio.sleep(5)
             net_stat = psutil.net_io_counters(pernic=True, nowrap=True)[inf]
             net_in_2 = net_stat.bytes_recv
             net_out_2 = net_stat.bytes_sent
