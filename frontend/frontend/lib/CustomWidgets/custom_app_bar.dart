@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Core/Services/api_service.dart';
 import 'package:frontend/Core/ViewModel/custom_app_view_model.dart';
 import 'package:frontend/Core/ViewModel/custom_app_view_model2.dart';
+import 'package:frontend/Core/ViewModel/dashboardviewmodel.dart';
 import 'package:frontend/Core/ViewModel/network_speed_viewmodel.dart';
+import 'package:frontend/Views/dashboard.dart';
 import 'package:frontend/locator.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -128,7 +131,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSize {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                      onPressed: () => locator.get<CustomAppViewModel2>().getServerData(),
+                      onPressed: () => locator.get<ApiService>().getMyLoc(),
                       icon: Icon(TablerIcons.refresh),
                     ),
                   ),

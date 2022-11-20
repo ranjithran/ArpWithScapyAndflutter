@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Core/Services/api_service.dart';
 import 'package:frontend/Core/ViewModel/attack_view_model.dart';
+import 'package:frontend/Core/ViewModel/dashboardtwoviewmodel.dart';
 import 'package:frontend/Core/ViewModel/left_bar_view_model.dart';
 import 'package:frontend/Core/ViewModel/dashboardviewmodel.dart';
 import 'package:frontend/Views/attack_window.dart';
+import 'package:frontend/Views/dashboard2.dart';
 import 'package:frontend/Views/hostsview.dart';
 import 'package:frontend/Views/interfaceview.dart';
 import 'package:frontend/Views/packetlistview.dart';
@@ -38,6 +41,10 @@ class Navigation extends StatelessWidget {
               SideNavigationBarItem(
                 icon: Icons.dashboard,
                 label: 'DashBoard',
+              ),
+              SideNavigationBarItem(
+                icon: Icons.dashboard,
+                label: 'DashBoard2',
               ),
               SideNavigationBarItem(
                 icon: TablerIcons.network,
@@ -108,13 +115,31 @@ class Navigation extends StatelessWidget {
           locator.resetLazySingleton<DashBoardViewModel>();
         }
         return MultiProvider(providers: [
-          ChangeNotifierProvider<DashBoardViewModel>(
+          FutureProvider<Map<String, double>>(
+              create: (context) => locator.get<ApiService>().getMyLoc(),
+              initialData: {},
+              lazy: false),
+          ChangeNotifierProxyProvider<Map<String, double>, DashBoardViewModel>(
+            update: (context, value, previous) {
+              DashBoardViewModel dashboard = locator.get<DashBoardViewModel>();
+              dashboard.mylat = value;
+              return dashboard;
+            },
             create: (context) => locator.get<DashBoardViewModel>(),
           ),
         ], child: const DashBoard());
       case 3:
-        return const TopTrafficView();
+        if (locator.isRegistered<DashBoardTwoViewModel>()) {
+          locator.resetLazySingleton<DashBoardTwoViewModel>();
+        }
+        return MultiProvider(providers: [
+          ChangeNotifierProvider<DashBoardTwoViewModel>(
+            create: (context) => locator.get<DashBoardTwoViewModel>(),
+          )
+        ], child: const DashBoard2());
       case 4:
+        return const TopTrafficView();
+      case 5:
         return PacketListView();
       default:
         return const Center(child: Text("Unable to find view"));

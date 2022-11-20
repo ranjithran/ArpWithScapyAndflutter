@@ -17,7 +17,7 @@ class AttackViewModel extends ChangeNotifier {
   final IpLookUpTable _ipLookUpTable = locator.get<IpLookUpTable>();
   final io.Socket _socket = locator.get<io.Socket>();
   List<SnifferDataJsonModel> vals = [];
-  ScrollController scrollController = new ScrollController();
+  ScrollController scrollController = ScrollController();
   IpWithMac _src = IpWithMac("0.0.0.0", "", mac: "00.00.00.00.00.00");
 
   IpWithMac get src => _src;
@@ -76,8 +76,8 @@ class AttackViewModel extends ChangeNotifier {
   bool get allipsAreUpdate => srcipupdate && dstipUpdate;
   dynamic addVals(dynamic data) {
     try {
-      // logger.d("got data--> ${data}");
       List<dynamic> tmps = data;
+      logger.d("got data--> $tmps");
       if (tmps.isNotEmpty) {
         vals.addAll(tmps.map((e) {
           return SnifferDataJsonModel.fromJson(json.decode(e));

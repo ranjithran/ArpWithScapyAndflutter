@@ -5,6 +5,7 @@ import 'package:frontend/Core/Services/api_service.dart';
 import 'package:frontend/Core/Services/iplookup_service.dart';
 import 'package:frontend/Core/Services/socket_client.dart';
 import 'package:frontend/Core/ViewModel/custom_app_view_model2.dart';
+import 'package:frontend/Core/ViewModel/dashboardtwoviewmodel.dart';
 import 'package:frontend/Core/ViewModel/left_bar_view_model.dart';
 import 'package:frontend/Core/ViewModel/network_speed_viewmodel.dart';
 import 'package:frontend/Core/ViewModel/dashboardviewmodel.dart';
@@ -18,12 +19,10 @@ import 'Core/ViewModel/host_viewmodel.dart';
 
 final locator = GetIt.I;
 final logger = Logger(
-  
   printer: PrettyPrinter(
     printEmojis: true,
     errorMethodCount: 10,
     methodCount: 10,
-    
   ),
 );
 
@@ -46,4 +45,5 @@ void setupLocators() {
   locator.registerLazySingleton(() => DashBoardViewModel());
   locator.registerLazySingleton(() => NetWorkSpeedViewModel());
   locator.registerLazySingleton(() => CustomAppViewModel2());
+  locator.registerLazySingleton(() => DashBoardTwoViewModel());
 }

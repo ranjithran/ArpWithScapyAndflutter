@@ -4,9 +4,11 @@ import 'package:sqlite3/sqlite3.dart';
 class IpLookUpTable {
   final Database _db = locator.get<Database>();
   Set<IPLookUpModel> unqiueIpLookUpValues = {};
+
   IpLookUpTable() {
     Future.microtask(() => selectAllIps());
   }
+
   void createTable() {
     _db.execute("""
   CREATE TABLE IF NOT EXISTS iplookup (
@@ -44,6 +46,18 @@ class IpLookUpTable {
     }
     logger.d("Totols IpLookUps ->${unqiueIpLookUpValues.length}");
     return unqiueIpLookUpValues;
+  }
+
+  List<ServerCountByCountry> getDataByServerCountOncountry() {
+    List<ServerCountByCountry> values = [];
+    final ResultSet resultSet = _db.select("""
+    SELECT count(*) as servercount,country from iplookup GROUP by country 
+    """);
+
+    for (Row row in resultSet) {
+      values.add(ServerCountByCountry.fromJson(row));
+    }
+    return values;
   }
 }
 
@@ -93,4 +107,19 @@ class IPLookUpModel {
   @override
   @override
   String toString() => "$ip $hostname $city $region $country $loc $org $postal $timezone";
+}
+
+class ServerCountByCountry {
+  int? serverValue;
+  String? country;
+  bool touchedIndex = false;
+  ServerCountByCountry(
+    this.serverValue,
+    this.country,
+  );
+
+  ServerCountByCountry.fromJson(Map<String, dynamic> row) {
+    serverValue = row['servercount'];
+    country = row['country'];
+  }
 }

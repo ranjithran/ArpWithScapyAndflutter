@@ -107,13 +107,14 @@ class PieChart2State extends State {
     return List.generate(Provider.of<DashBoardViewModel>(context, listen: false).piedata.length,
         (i) {
       final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
+      final fontSize = isTouched ? 12.0 : 16.0;
       final radius = isTouched ? 60.0 : 50.0;
       List<PieData> vals = Provider.of<DashBoardViewModel>(context, listen: false).piedata;
       return PieChartSectionData(
         color: vals[i].color,
         value: vals[i].value,
-        title: vals[i].title,
+        title: isTouched ? vals[i].name : vals[i].title,
+        showTitle: true,
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,

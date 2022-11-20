@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:frontend/Core/ViewModel/custom_app_view_model.dart';
 import 'package:frontend/Core/ViewModel/dashboardviewmodel.dart';
 import 'package:frontend/Graphs/top_traffic_pie.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
@@ -13,7 +14,7 @@ class DashBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (ResponsiveRowColumn(
+    return ResponsiveRowColumn(
       layout: ResponsiveRowColumnType.COLUMN,
       children: [
         ResponsiveRowColumnItem(
@@ -53,32 +54,53 @@ class DashBoard extends StatelessWidget {
               ),
               ResponsiveRowColumnItem(
                 rowFlex: 2,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    elevation: 2,
-                    child: Consumer<DashBoardViewModel>(
-                        builder: (context, value, child) => FlutterMap(
-                              options: MapOptions(
-                                zoom: 1,
-                                minZoom: 1,
-                                maxZoom: 5,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        elevation: 2,
+                        child: Consumer<DashBoardViewModel>(
+                          builder: (context, value, child) => FlutterMap(
+                            options: MapOptions(
+                              zoom: 1,
+                              minZoom: 1,
+                              maxZoom: 5,
+                            ),
+                            nonRotatedChildren: [
+                              AttributionWidget.defaultWidget(
+                                source: 'OpenStreetMap contributors',
+                                onSourceTapped: () {},
                               ),
-                              nonRotatedChildren: [
-                                AttributionWidget.defaultWidget(
-                                  source: 'OpenStreetMap contributors',
-                                  onSourceTapped: () {},
-                                ),
-                              ],
-                              children: [
-                                TileLayer(
-                                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                                ),
-                                MarkerLayer(markers: value.markers),
-                              ],
-                            )),
-                  ),
+                            ],
+                            children: [
+                              TileLayer(
+                                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+                              ),
+                              MarkerLayer(markers: value.markers),
+                              PolygonLayer(
+                                polygonCulling: false,
+                                polygons: value.polygons,
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 15,
+                      left: 20,
+                      child: const Text(
+                        'Vicitim Packet Map ',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -154,6 +176,6 @@ class DashBoard extends StatelessWidget {
               ]),
         ),
       ],
-    ));
+    );
   }
 }

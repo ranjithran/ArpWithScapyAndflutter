@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:frontend/locator.dart';
 import 'package:sqlite3/sqlite3.dart';
@@ -12,21 +11,37 @@ class PacketTable {
   }
   createTable() {
     db.execute("""
-    CREATE TABLE IF NOT EXISTS packetStore(
-	"srcip"	TEXT,
-	"dstip"	TEXT,
-	"srcmac"	TEXT,
-	"dstmac"	TEXT,
-	"rawData"	BLOB,
-  "createddate"	TEXT
-  );
-  """);
+      CREATE TABLE IF NOT EXISTS packetStore(
+	    "srcip"	TEXT,
+	    "dstip"	TEXT,
+	    "srcmac"	TEXT,
+	    "dstmac"	TEXT,
+	    "rawData"	BLOB,
+      "createddate"	TEXT
+      );
+    """);
+  }
+
+  List<IpTableWithCount> getTopTalkersByCountires() {
+    List<IpTableWithCount> result = [];
+
+    final ResultSet res = db.select("""
+    SELECT count(dstip) as dstipValue,dstip,iplookup.hostname as hostname ,iplookup.org as org ,iplookup.country as country,SUM(COUNT(dstip)) OVER() AS total_count
+    FROM packetStore 
+    INNER JOIN iplookup on iplookup.ip = packetStore.dstip
+    GROUP BY iplookup.country ORDER by dstipValue DESC
+    LIMIT 6 ;
+    """);
+    for (Row row in res) {
+      result.add(IpTableWithCount.fromJson(row));
+    }
+    return result;
   }
 
   List<PacketModel> getAll() {
     // if (result.) {
     final ResultSet res = db.select("""
-SELECT * from packetStore
+SELECT * from packetStore limit 1000
 """);
     for (Row row in res) {
       result.add(PacketModel.fromJson(row));
@@ -52,11 +67,11 @@ SELECT * from packetStore
 
     final ResultSet res = db.select("""
       SELECT count(dstip) as dstipValue,dstip,iplookup.hostname as hostname ,iplookup.org as org ,iplookup.country as country,SUM(COUNT(dstip)) OVER() AS total_count,iplookup.loc as loc
-  FROM packetStore 
-  INNER JOIN iplookup on iplookup.ip = packetStore.dstip
-  GROUP BY iplookup.org
-  LIMIT 6;
-""");
+      FROM packetStore 
+      INNER JOIN iplookup on iplookup.ip = packetStore.dstip
+      GROUP BY iplookup.org
+      LIMIT 7;
+    """);
     for (Row row in res) {
       result.putIfAbsent(row["dstip"], () => IpTableWithCount.fromJson(row));
     }
@@ -121,6 +136,7 @@ class IpTableWithCount {
   String? country;
   int? totalcount;
   String? loc;
+  bool touchedIndex = false;
   IpTableWithCount(
       {this.dstipValue,
       this.dstip,

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:frontend/Core/JsonModel/nmap_with_ip_mac.dart';
 import 'package:frontend/locator.dart';
@@ -17,7 +19,6 @@ class ApiService {
   }
 
   HostsWithMac? _hostsWithMac;
-  
 
   Future<List<String>> getIfaces() async {
     if (_ifaces.isEmpty) {
@@ -150,5 +151,12 @@ class ApiService {
       logger.e("onError->$onError");
     });
     return val;
+  }
+
+  Future<Map<String, double>> getMyLoc() async {
+    var response =
+        await Dio().get("https://geolocation-db.com/json/https://api.ipify.org/&position=true");
+    Map<String, dynamic> res = json.decode(response.data);
+    return {"latitude": res["latitude"], "longitude": res["longitude"]};
   }
 }

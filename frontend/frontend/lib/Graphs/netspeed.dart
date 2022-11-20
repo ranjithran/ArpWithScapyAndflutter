@@ -1,9 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Core/ViewModel/network_speed_viewmodel.dart';
-import 'package:frontend/locator.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class LineChartSample10 extends StatelessWidget {
   const LineChartSample10({super.key});
