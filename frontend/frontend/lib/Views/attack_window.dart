@@ -202,6 +202,8 @@ class AttackWindow extends StatelessWidget {
           ),
         ),
         ResponsiveRowColumnItem(
+            child: Text("Packet Recived - ${Provider.of<AttackViewModel>(context).vals.length}")),
+        ResponsiveRowColumnItem(
           child: Expanded(
             child: Container(
               height: 200,
@@ -213,6 +215,7 @@ class AttackWindow extends StatelessWidget {
                   itemCount: value.vals.length,
                   itemBuilder: (context, index) => NewWidget(index: value.vals[index]),
                   padding: const EdgeInsets.all(5),
+                  scrollDirection: Axis.vertical,
                 ),
               ),
             ),

@@ -17,7 +17,7 @@ class ApiService {
   }
 
   HostsWithMac? _hostsWithMac;
-  bool fetchHostwitMac = false;
+  
 
   Future<List<String>> getIfaces() async {
     if (_ifaces.isEmpty) {

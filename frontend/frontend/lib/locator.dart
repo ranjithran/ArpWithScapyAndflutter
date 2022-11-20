@@ -18,9 +18,13 @@ import 'Core/ViewModel/host_viewmodel.dart';
 
 final locator = GetIt.I;
 final logger = Logger(
+  
   printer: PrettyPrinter(
     printEmojis: true,
-  ), // Use the PrettyPrinter to format and print log
+    errorMethodCount: 10,
+    methodCount: 10,
+    
+  ),
 );
 
 void setupLocators() {
@@ -30,7 +34,7 @@ void setupLocators() {
   locator.registerLazySingleton(() => ApiService());
   locator.registerLazySingleton(() => AttackViewModel());
   locator.registerLazySingleton(
-    () => SocketClientForMe().initSocket(),
+    () => SocketClientForMe().getSocket(),
   );
   //
   locator.registerLazySingleton(() => VictimsViewModel());

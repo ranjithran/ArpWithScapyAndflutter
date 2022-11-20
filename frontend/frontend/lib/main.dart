@@ -1,11 +1,13 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/Core/Services/socket_client.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'Views/routerg.dart';
 import 'locator.dart';
 
 void main() {
   setupLocators();
+  SocketClientForMe().initSocket();
   runApp(const MyApp());
 }
 

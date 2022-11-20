@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:frontend/Core/ViewModel/attack_view_model.dart';
 import 'package:frontend/Core/ViewModel/left_bar_view_model.dart';
@@ -6,6 +5,7 @@ import 'package:frontend/Core/ViewModel/dashboardviewmodel.dart';
 import 'package:frontend/Views/attack_window.dart';
 import 'package:frontend/Views/hostsview.dart';
 import 'package:frontend/Views/interfaceview.dart';
+import 'package:frontend/Views/packetlistview.dart';
 import 'package:frontend/locator.dart';
 import 'package:provider/provider.dart';
 import 'package:side_navigation/side_navigation.dart';
@@ -42,6 +42,10 @@ class Navigation extends StatelessWidget {
               SideNavigationBarItem(
                 icon: TablerIcons.network,
                 label: 'Top Traffice Hosts',
+              ),
+              SideNavigationBarItem(
+                icon: TablerIcons.list,
+                label: 'Captured Packet ',
               ),
             ],
             onTap: (index) {
@@ -110,6 +114,8 @@ class Navigation extends StatelessWidget {
         ], child: const DashBoard());
       case 3:
         return const TopTrafficView();
+      case 4:
+        return PacketListView();
       default:
         return const Center(child: Text("Unable to find view"));
     }

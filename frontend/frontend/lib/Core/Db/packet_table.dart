@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:frontend/locator.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 class PacketTable {
   final Database db = locator.get<Database>();
+
+  List<PacketModel> result = [];
   PacketTable() {
     createTable();
   }
@@ -19,11 +23,24 @@ class PacketTable {
   """);
   }
 
+  List<PacketModel> getAll() {
+    // if (result.) {
+    final ResultSet res = db.select("""
+SELECT * from packetStore
+""");
+    for (Row row in res) {
+      result.add(PacketModel.fromJson(row));
+    }
+    // }
+    return result;
+  }
+
   insertValue(PacketModel data) {
-    if (data.dstip.isEmpty || data.dstip == 'null') {
-      logger.i("Skiped Insert in packet for ${data.toString()}");
+    if (data.dstip == null || data.dstip!.isEmpty || data.dstip == 'null') {
+      // logger.i("Skiped Insert in packet for ${data.toString()}");
       return;
     }
+
     String query =
         'INSERT INTO packetStore ("srcip","dstip","srcmac","dstmac","rawData","createddate") VALUES (\'${data.srcip}\',\'${data.dstip}\',\'${data.srcMac}\',\'${data.dstmac}\',\'${data.rawData}\',\'${DateTime.now()}\');';
     // logger.d("Query for PacketModel --> $query");
@@ -45,15 +62,27 @@ class PacketTable {
     }
     return result;
   }
+
+  insertList(List<PacketModel> res) {
+    final stmt = db.prepare("""
+  INSERT INTO packetStore ("srcip","dstip","srcmac","dstmac","rawData","createddate") VALUES (?,?,?,?,?,?);
+
+""");
+    stmt.execute(res);
+  }
+
+  deleteAll() {
+    db.execute("DELETE FROM packetStore");
+  }
 }
 
 class PacketModel {
-  String srcip;
-  String srcMac;
-  String dstip;
-  String dstmac;
-  String rawData;
-  String createddate;
+  String? srcip;
+  String? srcMac;
+  String? dstip;
+  String? dstmac;
+  String? rawData;
+  String? createddate;
   PacketModel(
       {this.dstip = "",
       this.dstmac = "",
@@ -61,6 +90,24 @@ class PacketModel {
       this.srcip = "",
       this.rawData = "",
       this.createddate = ""});
+  PacketModel.fromJson(Map<String, dynamic> json) {
+    dstip = json['dstip'];
+    srcip = json['srcip'];
+    srcMac = json['srcMac'];
+    dstmac = json['dstmac'];
+    rawData = json['rawData'];
+    createddate = json['createddate'];
+  }
+  Map<String, String> toJson() {
+    final Map<String, String> data = <String, String>{};
+    data['dstip'] = "'$dstip'";
+    data['srcip'] = "'$srcip'";
+    data['srcMac'] = "'$srcMac'";
+    data['dstmac'] = "'$dstmac'";
+    data['rawData'] = rawData!.replaceAll("\\", "");
+    data['createddate'] = createddate.toString();
+    return data;
+  }
 
   @override
   String toString() => "$srcip->$srcMac->$dstip->$dstmac->$rawData->$createddate";

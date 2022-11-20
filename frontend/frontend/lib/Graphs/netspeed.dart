@@ -14,7 +14,7 @@ class LineChartSample10 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (locator.get<io.Socket>().active) locator.get<NetWorkSpeedViewModel>().startNetWorkSpeed();
+    // if (locator.get<io.Socket>().active) locator.get<NetWorkSpeedViewModel>().startNetWorkSpeed();
     return Consumer<NetWorkSpeedViewModel>(builder: (context, value, child) {
       return value.cosPoints.isNotEmpty
           ? Column(

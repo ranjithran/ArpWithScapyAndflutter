@@ -1,4 +1,3 @@
-
 import 'package:frontend/locator.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -32,7 +31,7 @@ class IpLookUpTable {
     }
     String query =
         'INSERT INTO iplookup("ip","hostname","city","region","country","loc","org","postal","timezone") VALUES (\'${data.ip}\',\'${data.hostname}\',\'${data.city}\',\'${data.region}\',\'${data.country}\',\'${data.loc}\',\'${data.org}\',\'${data.postal}\',\'${data.timezone}\')';
-    logger.d("Insert IPlookUp query-> $query");
+    // logger.d("Insert IPlookUp query-> $query");
     unqiueIpLookUpValues.add(data);
     _db.execute(query);
   }
@@ -93,6 +92,5 @@ class IPLookUpModel {
   int get hashCode => ip.hashCode;
   @override
   @override
-  String toString() =>
-      "$ip $hostname $city $region $country $loc $org $postal $timezone";
+  String toString() => "$ip $hostname $city $region $country $loc $org $postal $timezone";
 }

@@ -12,7 +12,7 @@ class IpLookUpService {
         .then((value) {
       if (!_ipLookUpTable.unqiueIpLookUpValues.contains(ip)) {
         IPLookUpModel ipLookUpModel = IPLookUpModel.fromJson(value.data);
-        logger.d(ipLookUpModel.toString());
+        // logger.d(ipLookUpModel.toString());
         _ipLookUpTable.insertData(ipLookUpModel);
       }
     }).catchError((onError) {

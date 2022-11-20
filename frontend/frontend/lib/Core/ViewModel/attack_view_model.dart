@@ -17,7 +17,7 @@ class AttackViewModel extends ChangeNotifier {
   final IpLookUpTable _ipLookUpTable = locator.get<IpLookUpTable>();
   final io.Socket _socket = locator.get<io.Socket>();
   List<SnifferDataJsonModel> vals = [];
-
+  ScrollController scrollController = new ScrollController();
   IpWithMac _src = IpWithMac("0.0.0.0", "", mac: "00.00.00.00.00.00");
 
   IpWithMac get src => _src;
@@ -66,6 +66,7 @@ class AttackViewModel extends ChangeNotifier {
 
   void stopSnifing() {
     if (_socket.active) {
+      logger.i("Sent request to stop");
       _socket.emit("stopSniffer", "stop sniff");
     }
   }
@@ -76,28 +77,34 @@ class AttackViewModel extends ChangeNotifier {
   dynamic addVals(dynamic data) {
     try {
       // logger.d("got data--> ${data}");
-      SnifferDataJsonModel snifferDataJsonModel = SnifferDataJsonModel.fromJson(jsonDecode(data));
-      vals.add(snifferDataJsonModel);
-      notifyListeners();
-      const jsonEncoder = JsonEncoder();
-      if (snifferDataJsonModel.iP != null) {
-        _packetTable.insertValue(PacketModel(
-            dstip: snifferDataJsonModel.iP!.dst ?? "",
-            dstmac: snifferDataJsonModel.ethernet!.dst ?? "",
-            srcMac: snifferDataJsonModel.ethernet!.src ?? "",
-            srcip: snifferDataJsonModel.iP!.src ?? "",
-            rawData: jsonEncoder
-                .convert(snifferDataJsonModel)
-                .replaceAll("'", "\"")
-                .replaceAll('"', '\\"')));
-        if (snifferDataJsonModel.iP != null && snifferDataJsonModel.iP?.dst != null) {
-          logger.d("Checking for ${snifferDataJsonModel.iP?.dst ?? ""} in lookup Table");
-          if (!_ipLookUpTable.unqiueIpLookUpValues
-              .contains(IPLookUpModel(ip: snifferDataJsonModel.iP?.dst))) {
-            logger.d("found new ip ${snifferDataJsonModel.iP?.dst ?? ""}");
-            _ipLookUpService.getIpLookUpData(snifferDataJsonModel.iP?.dst ?? "");
-          }
-        }
+      List<dynamic> tmps = data;
+      if (tmps.isNotEmpty) {
+        vals.addAll(tmps.map((e) {
+          return SnifferDataJsonModel.fromJson(json.decode(e));
+        }));
+        notifyListeners();
+        Future.microtask((() {
+          const jsonEncoder = JsonEncoder();
+          List<SnifferDataJsonModel> tmp2 =
+              tmps.map((e) => SnifferDataJsonModel.fromJson(json.decode(e))).toList();
+          tmp2.forEach((e) {
+            if (e.iP != null && e.iP?.dst != null) {
+              // logger.d("Checking for ${snifferDataJsonModel.iP?.dst ?? ""} in lookup Table");
+              if (!_ipLookUpTable.unqiueIpLookUpValues.contains(IPLookUpModel(ip: e.iP?.dst))) {
+                // logger.d("found new ip ${snifferDataJsonModel.iP?.dst ?? ""}");
+                _ipLookUpService.getIpLookUpData(e.iP?.dst ?? "");
+              }
+            }
+            PacketModel model = PacketModel(
+                dstip: e.iP != null ? e.iP!.dst : "",
+                dstmac: e.ethernet != null ? e.ethernet!.dst : "",
+                srcMac: e.ethernet != null ? e.ethernet!.src : "",
+                srcip: e.iP != null ? e.iP!.src : "",
+                rawData: jsonEncoder.convert(e).replaceAll("'", "\"").replaceAll('"', '\\"'),
+                createddate: DateTime.now().toString());
+            _packetTable.insertValue(model);
+          });
+        }));
       }
     } on Exception catch (e) {
       logger.e("onError --> ${e.toString()}");
@@ -184,6 +191,7 @@ class AttackViewModel extends ChangeNotifier {
       logger.e("OnError --> $e");
     }
     _disposed = true;
+    scrollController.dispose();
     super.dispose();
   }
 
