@@ -6,6 +6,7 @@ class IpLookUpTable {
   Set<IPLookUpModel> unqiueIpLookUpValues = {};
 
   IpLookUpTable() {
+    createTable();
     Future.microtask(() => selectAllIps());
   }
 

@@ -146,7 +146,7 @@ class ApiService {
   Future<dynamic> getServerData() async {
     dynamic val = "";
     await http.get("/getServerData").then((value) {
-      val = value.toString();
+      val = value.data;
     }).catchError((onError) {
       logger.e("onError->$onError");
     });

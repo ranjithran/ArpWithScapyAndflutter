@@ -66,8 +66,8 @@ class AttackViewModel extends ChangeNotifier {
 
   void stopSnifing() {
     if (_socket.active) {
-      logger.i("Sent request to stop");
       _socket.emit("stopSniffer", "stop sniff");
+      logger.i("Sent request to stop");
     }
   }
 
@@ -77,7 +77,7 @@ class AttackViewModel extends ChangeNotifier {
   dynamic addVals(dynamic data) {
     try {
       List<dynamic> tmps = data;
-      logger.d("got data--> $tmps");
+      // logger.d("got data--> $tmps");
       if (tmps.isNotEmpty) {
         vals.addAll(tmps.map((e) {
           return SnifferDataJsonModel.fromJson(json.decode(e));
